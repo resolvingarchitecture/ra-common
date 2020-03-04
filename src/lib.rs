@@ -15,7 +15,7 @@ impl Context {
 
 pub struct Envelope {
     pub id: i64,
-    pub headers: HashMap::new(),
+    pub headers: HashMap<String, String>,
     pub client: i64,
     pub reply_to_client: bool,
     pub client_reply_action: String,
@@ -24,7 +24,11 @@ pub struct Envelope {
     pub man_con: ManCon,
     pub min_delay: i64,
     pub max_delay: i64,
-    pub payload: HashMap::new()
+    pub payload: HashMap<String, String>
+}
+
+impl Envelope {
+
 }
 
 pub struct Route {
