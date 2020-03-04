@@ -1,4 +1,4 @@
-
+use std::collections::HashMap;
 use std::collections::VecDeque;
 
 pub enum ManCon {
@@ -15,6 +15,7 @@ impl Context {
 
 pub struct Envelope {
     pub id: i64,
+    pub headers: HashMap::new(),
     pub client: i64,
     pub reply_to_client: bool,
     pub client_reply_action: String,
@@ -22,7 +23,8 @@ pub struct Envelope {
     pub routing_slip: DynamicRoutingSlip,
     pub man_con: ManCon,
     pub min_delay: i64,
-    pub max_delay: i64
+    pub max_delay: i64,
+    pub payload: HashMap::new()
 }
 
 pub struct Route {
@@ -34,7 +36,6 @@ pub struct Route {
     pub to: String,
     pub from: String,
     pub routed: bool
-
 }
 
 pub struct DynamicRoutingSlip {
