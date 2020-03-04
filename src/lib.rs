@@ -1,6 +1,30 @@
 
 use std::collections::VecDeque;
 
+pub enum ManCon {
+    NEO, EXTREME, VERYHIGH, HIGH, MEDIUM, LOW, NONE, UNKNOWN
+}
+
+struct Context {
+
+}
+
+impl Context {
+
+}
+
+pub struct Route {
+    pub id: i64,
+    pub service: String,
+    pub op: String,
+    pub orig: String,
+    pub dest: String,
+    pub to: String,
+    pub from: String,
+    pub routed: bool
+
+}
+
 pub struct DynamicRoutingSlip {
     routes: VecDeque<Route>,
     in_progress: bool
@@ -23,7 +47,7 @@ trait LifeCycle {
 }
 
 trait Service {
-
+    fn handle(&self);
 }
 
 trait MessageProducer {
