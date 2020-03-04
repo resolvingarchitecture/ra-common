@@ -1,6 +1,6 @@
 [package]
 name = "ra_common"
-version = "0.0.2"
+version = "0.0.3"
 authors = ["Brian Taylor <brian@resolvingarchitecture.io>"]
 license-file = "LICENSE"
 edition = "2018"
@@ -19,6 +19,7 @@ categories = ["command-line-utilities"]
 log = "0.4.8"
 failure = "0.1.5"
 exitfailure = "0.5.1"
+rand = "0.7.3"
 
 [dev-dependencies]
 assert_cmd = "0.10"

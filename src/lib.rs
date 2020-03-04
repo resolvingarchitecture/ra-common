@@ -1,78 +1,181 @@
-use std::collections::HashMap;
-use std::collections::VecDeque;
+/// Common Module
+mod cmn {
+    extern crate rand;
 
-pub enum ManCon {
-    NEO, EXTREME, VERYHIGH, HIGH, MEDIUM, LOW, NONE, UNKNOWN
-}
+    use std::collections::HashMap;
+    use std::collections::VecDeque;
 
-struct Context {
+    use rand::Rng;
 
-}
+    trait LifeCycle {
+        fn start(&self);
+        fn restart(&self);
+        fn pause(&self);
+        fn unpaus(&self);
+        fn stop(&self);
+        fn graceful_stop(&self);
+    }
 
-impl Context {
+    trait Service {
+        fn handle(&self, op: &String, env: &Envelope);
+    }
 
-}
+    trait Producer {
+        fn send(&self, env: &Envelope);
+    }
 
-pub struct Envelope {
-    pub id: i64,
-    pub headers: HashMap<String, String>,
-    pub client: i64,
-    pub reply_to_client: bool,
-    pub client_reply_action: String,
-    pub external: bool,
-    pub routing_slip: DynamicRoutingSlip,
-    pub man_con: ManCon,
-    pub min_delay: i64,
-    pub max_delay: i64,
-    pub payload: HashMap<String, String>
-}
+    trait Consumer {
+        fn receive(&self) -> &Envelope;
+    }
 
-impl Envelope {
+    /// Maneuvering Condition
+    pub enum ManCon {
+        NEO,
+        EXTREME,
+        VERYHIGH,
+        HIGH,
+        MEDIUM,
+        LOW,
+        NONE,
+        UNKNOWN
+    }
 
-}
+    pub enum Action{POST, PUT, DELETE, GET}
 
-pub struct Route {
-    pub id: i64,
-    pub service: String,
-    pub op: String,
-    pub orig: String,
-    pub dest: String,
-    pub to: String,
-    pub from: String,
-    pub routed: bool
-}
+    struct Context {
 
-pub struct DynamicRoutingSlip {
-    routes: VecDeque<Route>,
-    in_progress: bool
-}
+    }
 
-impl DynamicRoutingSlip {
-    pub fn start(&self) {}
-    pub fn next_route(&mut self) {}
-    pub fn peek_at_next_route(&self) {}
-    pub fn number_remaining_routes(&self) {}
-}
+    impl Context {
 
-trait LifeCycle {
-    fn start(&self) -> bool;
-    fn restart(&self) -> bool;
-    fn pause(&self) -> bool;
-    fn unpaus(&self) -> bool;
-    fn stop(&self) -> bool;
-    fn graceful_stop(&self) -> bool;
-}
+    }
 
-trait Service {
-    fn handle(&self);
-}
+    pub enum Network {
+        IMS,
+        LiFi,
+        Bluetooth,
+        WiFiDirect,
+        HTTPS,
+        TOR,
+        I2P,
+        Satellite,
+        FSRadio
+    }
 
-trait MessageProducer {
+    pub struct Node {
+        pub local_peers: HashMap<Network, Peer>
+    }
 
-}
+    pub struct Peer {
+        pub id: String,
+        pub network: Network,
+        pub did: DID,
+        pub port: u32
+    }
 
-trait MessageConsumer {
+    pub struct DID {
+        pub username: String,
+        pub passphrase: String,
+        pub passphrase2: String,
 
+    }
+
+    pub struct Envelope {
+        pub id: u64,
+        /// A stack-based routing slip that can
+    /// be added to at any time prior to
+    /// completion.
+        pub slip: Slip,
+        /// The minimal ManCon for this message
+        pub man_con: ManCon,
+        /// Delay Until this time in milliseconds since epoch.
+    /// If min_delay and max_delay also included,
+    /// include a random delay after delay_until based on
+    /// their range.
+        pub delay_until: u64,
+        /// Delay for this many milliseconds as a minimum
+        pub min_delay: u64,
+        /// Delay for this many milliseconds as a maximum
+        pub max_delay: u64,
+        /// Meta-data used for assisting with routing
+        pub headers: HashMap<String, String>,
+        /// Data being sent to a destination
+        pub payload: HashMap<String, String>
+    }
+
+    impl Envelope {
+        fn new() -> Envelope {
+            let mut rng = rand::thread_rng();
+            Envelope {
+                id: rng.gen(),
+                slip: Slip::new(),
+                man_con: ManCon::UNKNOWN,
+                delay_until: 0,
+                min_delay: 0,
+                max_delay: 0,
+                headers: HashMap::new(),
+                payload: HashMap::new()
+            }
+        }
+    }
+
+    pub struct Route {
+        pub service: String,
+        pub op: String,
+        pub orig: String,
+        pub orig_port: u16,
+        pub dest: String,
+        pub dest_port: u16,
+        pub from: String,
+        pub from_port: u16,
+        pub to: String,
+        pub to_port: u16,
+        pub routed: bool
+    }
+
+    impl Route {
+        fn new(s: String, o: String, o_addr: String, o_port: u16, d_addr: String, d_port: u16, f_addr: String, f_port: u16, t_addr: String, t_port: u16) -> Route {
+            Route {
+                service: s,
+                op: o,
+                orig: o_addr,
+                orig_port: o_port,
+                dest: d_addr,
+                dest_port: d_port,
+                from: f_addr,
+                from_port: f_port,
+                to: t_addr,
+                to_port: t_port,
+                routed: false
+            }
+        }
+    }
+
+    pub struct Slip {
+        routes: VecDeque<Route>,
+        in_progress: bool
+    }
+
+    impl Slip {
+        fn new() -> Slip {
+            Slip {
+                routes: VecDeque::with_capacity(2),
+                in_progress: false
+            }
+        }
+        pub fn add_route(&mut self, r: Route) {
+            self.routes.push_front(r);
+        }
+        pub fn next_route(&mut self) -> Option<Route> {
+            self.routes.pop_front()
+        }
+        pub fn peek_at_next_route(&self) -> Option<&Route> {
+            self.routes.front()
+        }
+        pub fn number_remaining_routes(&self) -> usize {
+            self.routes.len()
+        }
+    }
 }
 
 #[cfg(test)]
