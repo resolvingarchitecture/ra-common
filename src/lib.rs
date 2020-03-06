@@ -6,7 +6,7 @@ use std::collections::VecDeque;
 
 use rand::Rng;
 
-trait LifeCycle {
+pub trait LifeCycle {
     fn start(&self);
     fn restart(&self);
     fn pause(&self);
@@ -15,15 +15,15 @@ trait LifeCycle {
     fn graceful_stop(&self);
 }
 
-trait Service {
+pub trait Service {
     fn handle(&self, op: &String, env: &Envelope);
 }
 
-trait Producer {
+pub trait Producer {
     fn send(&self, env: &Envelope);
 }
 
-trait Consumer {
+pub trait Consumer {
     fn receive(&self) -> &Envelope;
 }
 
@@ -151,25 +151,31 @@ impl Route {
 }
 
 pub struct Slip {
-    routes: VecDeque<Route>,
+    routes: Vec<Route>,
     in_progress: bool
 }
 
 impl Slip {
     fn new() -> Slip {
         Slip {
-            routes: VecDeque::with_capacity(2),
+            routes: Vec::with_capacity(2),
+            in_progress: false
+        }
+    }
+    fn with_capacity(capacity: usize) -> Slip {
+        Slip {
+            routes: Vec::with_capacity(capacity),
             in_progress: false
         }
     }
     pub fn add_route(&mut self, r: Route) {
-        self.routes.push_front(r);
+        self.routes.push(r);
     }
     pub fn next_route(&mut self) -> Option<Route> {
-        self.routes.pop_front()
+        self.routes.pop()
     }
     pub fn peek_at_next_route(&self) -> Option<&Route> {
-        self.routes.front()
+        self.routes.last()
     }
     pub fn number_remaining_routes(&self) -> usize {
         self.routes.len()
