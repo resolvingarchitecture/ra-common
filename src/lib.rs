@@ -27,6 +27,16 @@ pub trait Consumer {
     fn receive(&self, env: &Envelope);
 }
 
+pub struct LogConsumer {
+
+}
+
+impl Consumer for LogConsumer {
+    fn receive(&self, env: &Envelope) {
+        println!("Envelope received: {}", env.id);
+    }
+}
+
 /// Maneuvering Condition
 pub enum ManCon {
     NEO,
