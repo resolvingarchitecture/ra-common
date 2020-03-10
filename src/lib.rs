@@ -3,6 +3,7 @@ extern crate rand;
 
 use std::collections::HashMap;
 use std::collections::VecDeque;
+use std::sync::mpsc::SendError;
 
 use rand::Rng;
 
@@ -20,7 +21,7 @@ pub trait Service {
 }
 
 pub trait Producer {
-    fn send(&self, env: Box<Envelope>);
+    fn send(&self, env: Box<Envelope>) -> Result<(), SendError<Box<Envelope>>>;
 }
 
 pub trait Consumer {
