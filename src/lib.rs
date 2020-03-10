@@ -157,7 +157,7 @@ impl Route {
 }
 
 pub trait Router {
-    fn route(&self, env: Envelope) -> Option<Route>;
+    fn route(&self, env: Box<Envelope>) -> Option<Route>;
 }
 
 pub struct Slip {
