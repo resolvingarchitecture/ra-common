@@ -116,9 +116,9 @@ pub struct Envelope {
 }
 
 impl Envelope {
-    fn new() -> Envelope {
+    fn new() -> Box<Envelope> {
         let mut rng = rand::thread_rng();
-        Envelope {
+        Box::new(Envelope {
             id: rng.gen(),
             slip: Slip::new(),
             man_con: ManCon::UNKNOWN,
@@ -127,7 +127,7 @@ impl Envelope {
             max_delay: 0,
             headers: HashMap::new(),
             payload: HashMap::new()
-        }
+        })
     }
 }
 
