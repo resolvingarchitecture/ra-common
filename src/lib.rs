@@ -10,7 +10,7 @@ pub trait LifeCycle {
     fn start(&self);
     fn restart(&self);
     fn pause(&self);
-    fn unpaus(&self);
+    fn unpause(&self);
     fn stop(&self);
     fn graceful_stop(&self);
 }
@@ -41,11 +41,7 @@ pub enum ManCon {
 
 pub enum Action{POST, PUT, DELETE, GET}
 
-struct Context {
-
-}
-
-impl Context {
+pub struct Context {
 
 }
 
@@ -76,7 +72,8 @@ pub struct DID {
     pub username: String,
     pub passphrase: String,
     pub passphrase2: String,
-
+    pub address: String,
+    pub algorithm: String
 }
 
 pub struct Envelope {
@@ -119,33 +116,25 @@ impl Envelope {
 }
 
 pub struct Route {
-    pub service: String,
-    pub op: String,
-    pub orig: String,
-    pub orig_port: u16,
-    pub dest: String,
-    pub dest_port: u16,
-    pub from: String,
-    pub from_port: u16,
-    pub to: String,
-    pub to_port: u16,
-    pub routed: bool
+    pub _service: String,
+    pub _op: String,
+    pub _orig: String,
+    pub _dest: String,
+    pub _from: String,
+    pub _to: String,
+    pub _routed: bool
 }
 
 impl Route {
-    fn new(s: String, o: String, o_addr: String, o_port: u16, d_addr: String, d_port: u16, f_addr: String, f_port: u16, t_addr: String, t_port: u16) -> Route {
+    fn new(service: String, operation: String, orig: String, dest: String, from: String, to: String) -> Route {
         Route {
-            service: s,
-            op: o,
-            orig: o_addr,
-            orig_port: o_port,
-            dest: d_addr,
-            dest_port: d_port,
-            from: f_addr,
-            from_port: f_port,
-            to: t_addr,
-            to_port: t_port,
-            routed: false
+            _service: service,
+            _op: operation,
+            _orig: orig,
+            _dest: dest,
+            _from: from,
+            _to: to,
+            _routed: false
         }
     }
 }
@@ -171,11 +160,11 @@ impl Slip {
     pub fn add_route(&mut self, r: Route) {
         self.routes.push(r);
     }
-    pub fn next_route(&mut self) -> Option<Route> {
-        self.routes.pop()
-    }
-    pub fn peek_at_next_route(&self) -> Option<&Route> {
+    pub fn current_route(&self) -> Option<&Route> {
         self.routes.last()
+    }
+    pub fn end_route(&mut self) -> Option<Route> {
+        self.routes.pop()
     }
     pub fn number_remaining_routes(&self) -> usize {
         self.routes.len()
