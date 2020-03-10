@@ -31,6 +31,12 @@ pub struct LogConsumer {
 
 }
 
+impl LogConsumer {
+    pub fn new() -> Box<LogConsumer> {
+        Box::new(LogConsumer {})
+    }
+}
+
 impl Consumer for LogConsumer {
     fn receive(&self, env: &Envelope) {
         println!("Envelope received: {}", env.id);
