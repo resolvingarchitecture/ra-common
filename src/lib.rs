@@ -20,11 +20,11 @@ pub trait Service {
 }
 
 pub trait Producer {
-    fn send(&self, env: &Envelope);
+    fn send(&self, env: Box<Envelope>);
 }
 
 pub trait Consumer {
-    fn receive(&self, env: &Envelope);
+    fn receive(&self, env: Box<Envelope>);
 }
 
 pub struct LogConsumer {
@@ -38,7 +38,7 @@ impl LogConsumer {
 }
 
 impl Consumer for LogConsumer {
-    fn receive(&self, env: &Envelope) {
+    fn receive(&self, env: Box<Envelope>) {
         println!("Envelope received: {}", env.id);
     }
 }
