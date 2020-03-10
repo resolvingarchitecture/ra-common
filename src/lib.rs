@@ -142,7 +142,7 @@ pub struct Route {
 }
 
 impl Route {
-    fn new(service: String, operation: String, orig: String, dest: String, from: String, to: String) -> Route {
+    pub fn new(service: String, operation: String, orig: String, dest: String, from: String, to: String) -> Route {
         Route {
             _service: service,
             _op: operation,
