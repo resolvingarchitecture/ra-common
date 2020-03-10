@@ -139,6 +139,10 @@ impl Route {
     }
 }
 
+pub trait Router {
+    fn route(&self, env: Envelope) -> Option<Route>;
+}
+
 pub struct Slip {
     routes: Vec<Route>,
     in_progress: bool
