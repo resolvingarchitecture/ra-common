@@ -116,7 +116,7 @@ pub struct Envelope {
 }
 
 impl Envelope {
-    fn new() -> Box<Envelope> {
+    pub fn new() -> Box<Envelope> {
         let mut rng = rand::thread_rng();
         Box::new(Envelope {
             id: rng.gen(),
