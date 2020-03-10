@@ -24,7 +24,7 @@ pub trait Producer {
 }
 
 pub trait Consumer {
-    fn receive(&self) -> &Envelope;
+    fn receive(&self, env: &Envelope);
 }
 
 /// Maneuvering Condition
