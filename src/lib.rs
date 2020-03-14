@@ -17,15 +17,15 @@ pub trait LifeCycle {
 }
 
 pub trait Service {
-    fn handle(&self, op: &String, env: &Envelope);
+    fn handle(&mut self, op: &String, env: &Envelope);
 }
 
 pub trait Producer {
-    fn send(&self, env: Box<Envelope>) -> Result<(), SendError<Box<Envelope>>>;
+    fn send(&mut self, env: Box<Envelope>);
 }
 
 pub trait Consumer {
-    fn receive(&self, env: Box<Envelope>);
+    fn receive(&mut self) -> Box<Envelope>;
 }
 
 pub struct LogConsumer {
@@ -34,13 +34,21 @@ pub struct LogConsumer {
 
 impl LogConsumer {
     pub fn new() -> Box<LogConsumer> {
-        Box::new(LogConsumer {})
+        Box::new(LogConsumer {
+
+        })
     }
 }
 
 impl Consumer for LogConsumer {
-    fn receive(&self, env: Box<Envelope>) {
-        println!("Envelope received: {}", env.id);
+    fn receive(&mut self) -> Box<Envelope> {
+        unimplemented!()
+    }
+}
+
+impl Producer for LogConsumer {
+    fn send(&mut self, env: Box<Envelope>) {
+        unimplemented!()
     }
 }
 
