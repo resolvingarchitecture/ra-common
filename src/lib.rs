@@ -151,7 +151,29 @@ pub struct Route {
 }
 
 impl Route {
-    pub fn new_no_relay(service: String, operation: String, orig: String, dest: String) -> Route {
+    pub fn new_msg_route_no_relay(orig: String, dest: String) -> Route {
+        Route {
+            _service: String::new(),
+            _op: String::new(),
+            _orig: orig,
+            _dest: dest,
+            _from: String::new(),
+            _to: String::new(),
+            _routed: false
+        }
+    }
+    pub fn new_msg_route_with_relay(orig: String, dest: String, from: String, to: String) -> Route {
+        Route {
+            _service: String::new(),
+            _op: String::new(),
+            _orig: orig,
+            _dest: dest,
+            _from: from,
+            _to: to,
+            _routed: false
+        }
+    }
+    pub fn new_srv_route_no_relay(service: String, operation: String, orig: String, dest: String) -> Route {
         Route {
             _service: service,
             _op: operation,
@@ -162,7 +184,7 @@ impl Route {
             _routed: false
         }
     }
-    pub fn new_with_relay(service: String, operation: String, orig: String, dest: String, from: String, to: String) -> Route {
+    pub fn new_srv_route_with_relay(service: String, operation: String, orig: String, dest: String, from: String, to: String) -> Route {
         Route {
             _service: service,
             _op: operation,
