@@ -8,12 +8,12 @@ use std::sync::mpsc::SendError;
 use rand::Rng;
 
 pub trait LifeCycle {
-    fn start(&self);
-    fn restart(&self);
-    fn pause(&self);
-    fn unpause(&self);
-    fn stop(&self);
-    fn graceful_stop(&self);
+    fn start(&mut self);
+    fn restart(&mut self);
+    fn pause(&mut self);
+    fn unpause(&mut self);
+    fn stop(&mut self);
+    fn graceful_stop(&mut self);
 }
 
 pub trait Service {
