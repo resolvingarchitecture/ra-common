@@ -143,7 +143,18 @@ pub struct Route {
 }
 
 impl Route {
-    pub fn new(service: String, operation: String, orig: String, dest: String, from: String, to: String) -> Route {
+    pub fn new_no_relay(service: String, operation: String, orig: String, dest: String) -> Route {
+        Route {
+            _service: service,
+            _op: operation,
+            _orig: orig,
+            _dest: dest,
+            _from: String::new(),
+            _to: String::new(),
+            _routed: false
+        }
+    }
+    pub fn new_with_relay(service: String, operation: String, orig: String, dest: String, from: String, to: String) -> Route {
         Route {
             _service: service,
             _op: operation,
