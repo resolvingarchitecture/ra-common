@@ -127,7 +127,7 @@ pub struct Envelope {
     /// Meta-data used for assisting with routing
     pub headers: HashMap<String, String>,
     /// Data being sent to a destination
-    pub payload: HashMap<String, String>
+    pub payload: Option<String>
 }
 
 impl Envelope {
@@ -141,7 +141,7 @@ impl Envelope {
             min_delay: 0,
             max_delay: 0,
             headers: HashMap::new(),
-            payload: HashMap::new()
+            payload: None
         })
     }
 }
@@ -150,26 +150,26 @@ impl Envelope {
 pub struct Route {
     pub _service: String,
     pub _op: String,
-    pub _orig: String,
-    pub _dest: String,
-    pub _from: String,
-    pub _to: String,
+    pub _orig: u64,
+    pub _dest: u64,
+    pub _from: u64,
+    pub _to: u64,
     pub _routed: bool
 }
 
 impl Route {
-    pub fn new_msg_route_no_relay(orig: String, dest: String) -> Route {
+    pub fn new_msg_route_no_relay(orig: u64, dest: u64) -> Route {
         Route {
             _service: String::new(),
             _op: String::new(),
             _orig: orig,
             _dest: dest,
-            _from: String::new(),
-            _to: String::new(),
+            _from: 0,
+            _to: 0,
             _routed: false
         }
     }
-    pub fn new_msg_route_with_relay(orig: String, dest: String, from: String, to: String) -> Route {
+    pub fn new_msg_route_with_relay(orig: u64, dest: u64, from: u64, to: u64) -> Route {
         Route {
             _service: String::new(),
             _op: String::new(),
@@ -180,18 +180,18 @@ impl Route {
             _routed: false
         }
     }
-    pub fn new_srv_route_no_relay(service: String, operation: String, orig: String, dest: String) -> Route {
+    pub fn new_srv_route_no_relay(service: String, operation: String, orig: u64, dest: u64) -> Route {
         Route {
             _service: service,
             _op: operation,
             _orig: orig,
             _dest: dest,
-            _from: String::new(),
-            _to: String::new(),
+            _from: 0,
+            _to: 0,
             _routed: false
         }
     }
-    pub fn new_srv_route_with_relay(service: String, operation: String, orig: String, dest: String, from: String, to: String) -> Route {
+    pub fn new_srv_route_with_relay(service: String, operation: String, orig: u64, dest: u64, from: u64, to: u64) -> Route {
         Route {
             _service: service,
             _op: operation,
