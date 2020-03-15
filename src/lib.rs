@@ -53,6 +53,7 @@ impl Producer for LogConsumer {
 }
 
 /// Maneuvering Condition
+#[derive(Debug)]
 pub enum ManCon {
     NEO,
     EXTREME,
@@ -70,6 +71,7 @@ pub struct Context {
 
 }
 
+#[derive(Debug)]
 pub enum Network {
     IMS,
     LiFi,
@@ -82,10 +84,12 @@ pub enum Network {
     FSRadio
 }
 
+#[derive(Debug)]
 pub struct Node {
     pub local_peers: HashMap<Network, Peer>
 }
 
+#[derive(Debug)]
 pub struct Peer {
     pub id: String,
     pub network: Network,
@@ -93,6 +97,7 @@ pub struct Peer {
     pub port: u32
 }
 
+#[derive(Debug)]
 pub struct DID {
     pub username: String,
     pub passphrase: String,
@@ -101,6 +106,7 @@ pub struct DID {
     pub algorithm: String
 }
 
+#[derive(Debug)]
 pub struct Envelope {
     pub id: u64,
     /// A stack-based routing slip that can
@@ -140,6 +146,7 @@ impl Envelope {
     }
 }
 
+#[derive(Debug)]
 pub struct Route {
     pub _service: String,
     pub _op: String,
@@ -201,6 +208,7 @@ pub trait Router {
     fn route(&self, env: Box<Envelope>) -> Option<Route>;
 }
 
+#[derive(Debug)]
 pub struct Slip {
     routes: Vec<Route>,
     in_progress: bool
