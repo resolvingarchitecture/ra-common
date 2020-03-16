@@ -84,7 +84,6 @@ pub enum Network {
     FSRadio
 }
 
-#[derive(Debug)]
 pub struct Node {
     pub local_peers: HashMap<Network, Peer>
 }
