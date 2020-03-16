@@ -241,8 +241,8 @@ impl Slip {
     }
 }
 
-mod util {
-    mod wait {
+pub mod util {
+    pub mod wait {
         use std::{thread, time};
         fn wait_a_day(days: u64) {
             thread::sleep(time::Duration::from_secs(days * 24 * 60 * 60));
