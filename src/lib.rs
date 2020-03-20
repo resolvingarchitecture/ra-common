@@ -72,13 +72,13 @@ pub struct DID {
 pub struct Envelope {
     pub id: u64,
     /// A stack-based routing slip that can
-/// be added to at any time prior to
-/// completion.
+    /// be added to at any time prior to
+    /// completion.
     pub slip: Slip,
     /// Delay Until this time in milliseconds since epoch.
-/// If min_delay and max_delay also included,
-/// include a random delay after delay_until based on
-/// their range.
+    /// If min_delay and max_delay also included,
+    /// include a random delay after delay_until based on
+    /// their range.
     pub delay_until: u64,
     /// Delay for this many milliseconds as a minimum
     pub min_delay: u64,
@@ -96,7 +96,6 @@ impl Envelope {
         Box::new(Envelope {
             id: rng.gen(),
             slip: Slip::new(),
-            man_con: ManCon::UNKNOWN,
             delay_until: 0,
             min_delay: 0,
             max_delay: 0,
