@@ -75,8 +75,6 @@ pub struct Envelope {
 /// be added to at any time prior to
 /// completion.
     pub slip: Slip,
-    /// The minimal ManCon for this message
-    pub man_con: ManCon,
     /// Delay Until this time in milliseconds since epoch.
 /// If min_delay and max_delay also included,
 /// include a random delay after delay_until based on
