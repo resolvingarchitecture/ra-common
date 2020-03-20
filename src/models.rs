@@ -4,6 +4,7 @@ extern crate rand;
 use std::collections::HashMap;
 use std::collections::VecDeque;
 use std::sync::mpsc::SendError;
+use std::marker::Send;
 
 use rand::Rng;
 
@@ -88,6 +89,10 @@ pub struct Envelope {
     pub headers: HashMap<String, String>,
     /// Data being sent to a destination
     pub payload: Option<String>
+}
+
+unsafe impl Send for Envelope {
+
 }
 
 impl Envelope {
