@@ -28,19 +28,6 @@ pub trait Consumer {
     fn receive(&mut self) -> Box<Envelope>;
 }
 
-/// Maneuvering Condition
-#[derive(Debug)]
-pub enum ManCon {
-    NEO,
-    EXTREME,
-    VERYHIGH,
-    HIGH,
-    MEDIUM,
-    LOW,
-    NONE,
-    UNKNOWN
-}
-
 pub enum Action{POST, PUT, DELETE, GET}
 
 pub struct Context {
