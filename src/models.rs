@@ -17,7 +17,7 @@ pub trait LifeCycle {
 }
 
 pub trait Service {
-    fn handle(&mut self, op: &String, env: &Envelope);
+    fn handle(&mut self, op: &String, env: &mut Envelope);
 }
 
 pub trait Producer {
