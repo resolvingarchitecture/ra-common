@@ -28,30 +28,6 @@ pub trait Consumer {
     fn receive(&mut self) -> Box<Envelope>;
 }
 
-pub struct LogConsumer {
-
-}
-
-impl LogConsumer {
-    pub fn new() -> Box<LogConsumer> {
-        Box::new(LogConsumer {
-
-        })
-    }
-}
-
-impl Consumer for LogConsumer {
-    fn receive(&mut self) -> Box<Envelope> {
-        unimplemented!()
-    }
-}
-
-impl Producer for LogConsumer {
-    fn send(&mut self, env: Box<Envelope>) {
-        unimplemented!()
-    }
-}
-
 /// Maneuvering Condition
 #[derive(Debug)]
 pub enum ManCon {
