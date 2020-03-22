@@ -8,15 +8,6 @@ use std::marker::Send;
 
 use rand::Rng;
 
-pub trait LifeCycle {
-    fn start(&mut self);
-    fn restart(&mut self);
-    fn pause(&mut self);
-    fn unpause(&mut self);
-    fn stop(&mut self);
-    fn graceful_stop(&mut self);
-}
-
 pub trait Service {
     fn handle(&mut self, op: &String, env: &mut Envelope);
 }
@@ -65,7 +56,7 @@ pub struct Context {
 }
 
 #[derive(Debug)]
-pub enum Network {
+pub enum NetworkId {
     IMS,
     LiFi,
     Bluetooth,
@@ -77,6 +68,7 @@ pub enum Network {
     FSRadio
 }
 
+#[derive(Debug)]
 pub enum NetworkStatus {
     Unregistered, // 0 - Unknown/not registered yet
     // Sensor Starting Up
@@ -110,16 +102,28 @@ pub enum NetworkStatus {
     Error // Likely need of Sensor restart
 }
 
+pub struct Network {
+    _id: NetworkId,
+    _status: NetworkStatus
+}
+
+impl Network {
+    pub fn new(id: NetworkId) -> Box<Network> {
+        Box::new(Network {
+            _id: id,
+            _status: NetworkStatus::NotInitialized
+        })
+    }
+}
+
 pub struct Node {
     pub local_peers: HashMap<Network, Peer>
 }
 
 #[derive(Debug)]
 pub struct Peer {
-    pub id: String,
-    pub network: Network,
-    pub did: DID,
-    pub port: u32
+    pub network_id: NetworkId,
+    pub did: DID
 }
 
 #[derive(Debug)]
@@ -153,9 +157,7 @@ pub struct Envelope {
     pub payload: Option<String>
 }
 
-unsafe impl Send for Envelope {
-
-}
+unsafe impl Send for Envelope {}
 
 impl Envelope {
     pub fn new() -> Box<Envelope> {
