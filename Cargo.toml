@@ -10,7 +10,7 @@ documentation = "https://github.com/resolvingarchitecture/ra-common"
 repository = "https://github.com/resolvingarchitecture/ra-common.git"
 publish = true
 readme = "README.md"
-keywords = ["resolving","architecture"]
+keywords = ["resolving-architecture"]
 categories = ["command-line-utilities"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
