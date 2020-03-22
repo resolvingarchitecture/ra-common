@@ -103,6 +103,7 @@ pub enum NetworkStatus {
     Error // Likely need of Sensor restart
 }
 
+#[derive(Debug)]
 pub struct Network {
     _id: NetworkId,
     _status: NetworkStatus
@@ -118,7 +119,7 @@ impl Network {
 }
 
 pub struct Node {
-    pub local_peers: HashMap<Network, Peer>
+    pub local_peers: HashMap<NetworkId, Peer>
 }
 
 #[derive(Debug)]
@@ -134,6 +135,19 @@ pub struct DID {
     pub passphrase2: String,
     pub address: String,
     pub algorithm: String
+}
+
+/// Network, address, pub_key, sig, and packet are None when at the destination, only env is Some.
+/// The opposite is true when packet is a relay - Network, address, pub_key, sig, and packet are Some, env is None.
+/// Packet attribute is a string of type JSON representing an embedded packet for further relaying.
+#[derive(Debug)]
+pub struct Packet {
+    pub network: NetworkId,
+    pub address: String,
+    pub pub_key: String,
+    pub sig: String,
+    pub packet: String,
+    pub env: Envelope
 }
 
 #[derive(Debug)]
@@ -155,7 +169,7 @@ pub struct Envelope {
     /// Meta-data used for assisting with routing
     pub headers: HashMap<String, String>,
     /// Data being sent to a destination
-    pub payload: Option<String>
+    pub payload: HashMap<String, String>
 }
 
 unsafe impl Send for Envelope {}
@@ -170,7 +184,7 @@ impl Envelope {
             min_delay: 0,
             max_delay: 0,
             headers: HashMap::new(),
-            payload: None
+            payload: HashMap::new()
         })
     }
 }
@@ -179,64 +193,23 @@ impl Envelope {
 pub struct Route {
     pub _service: String,
     pub _op: String,
-    pub _orig: u64,
-    pub _dest: u64,
-    pub _from: u64,
-    pub _to: u64,
-    pub _routed: bool
 }
 
 impl Route {
-    pub fn new_msg_route_no_relay(orig: u64, dest: u64) -> Route {
-        Route {
-            _service: String::new(),
-            _op: String::new(),
-            _orig: orig,
-            _dest: dest,
-            _from: 0,
-            _to: 0,
-            _routed: false
-        }
-    }
-    pub fn new_msg_route_with_relay(orig: u64, dest: u64, from: u64, to: u64) -> Route {
-        Route {
-            _service: String::new(),
-            _op: String::new(),
-            _orig: orig,
-            _dest: dest,
-            _from: from,
-            _to: to,
-            _routed: false
-        }
-    }
-    pub fn new_srv_route_no_relay(service: String, operation: String, orig: u64, dest: u64) -> Route {
+    pub fn new(service: String, operation: String) -> Route {
         Route {
             _service: service,
             _op: operation,
-            _orig: orig,
-            _dest: dest,
-            _from: 0,
-            _to: 0,
-            _routed: false
-        }
-    }
-    pub fn new_srv_route_with_relay(service: String, operation: String, orig: u64, dest: u64, from: u64, to: u64) -> Route {
-        Route {
-            _service: service,
-            _op: operation,
-            _orig: orig,
-            _dest: dest,
-            _from: from,
-            _to: to,
-            _routed: false
         }
     }
 }
 
 pub trait Router {
-    fn route(&self, env: Box<Envelope>) -> Option<Route>;
+    fn route(&self, env: Box<Envelope>) -> Box<Envelope>;
 }
 
+/// Provides a vector of Route implemented as a Stack.
+/// Supports adding to the stack at any point.
 #[derive(Debug)]
 pub struct Slip {
     routes: Vec<Route>,
