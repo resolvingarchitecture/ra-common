@@ -137,18 +137,14 @@ pub struct DID {
     pub algorithm: String
 }
 
-/// Network, address, packet, and sig are Some while env is None when a relay.
-/// Network, address, packet, and sig are None while env is Some at the destination.
-/// Sig used for packet when relay and for env when at destination.
-/// Packet attribute is a string of type JSON representing an embedded Packet for further relaying.
-/// Env attribute is a string of type JSON representing the embedded Envelope encrypted.
+/// Payload is of type JSON. When network, address, and sig are Some, it is a JSON formatted relay packet.
+/// When network, address, and sig are None, it is a JSON formatted Envelope.
 #[derive(Debug)]
 pub struct Packet {
     pub network: NetworkId,
     pub address: String,
-    pub packet: String,
     pub sig: String,
-    pub env: String
+    pub payload: String
 }
 
 pub trait Router {
