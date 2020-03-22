@@ -137,22 +137,29 @@ pub struct DID {
     pub algorithm: String
 }
 
-/// Network, address, pub_key, sig, and packet are None when at the destination, only env is Some.
-/// The opposite is true when packet is a relay - Network, address, pub_key, sig, and packet are Some, env is None.
-/// Packet attribute is a string of type JSON representing an embedded packet for further relaying.
+/// Network, address, packet, and sig are Some while env is None when a relay.
+/// Network, address, packet, and sig are None while env is Some at the destination.
+/// Sig used for packet when relay and for env when at destination.
+/// Packet attribute is a string of type JSON representing an embedded Packet for further relaying.
+/// Env attribute is a string of type JSON representing the embedded Envelope encrypted.
 #[derive(Debug)]
 pub struct Packet {
     pub network: NetworkId,
     pub address: String,
-    pub pub_key: String,
-    pub sig: String,
     pub packet: String,
-    pub env: Envelope
+    pub sig: String,
+    pub env: String
+}
+
+pub trait Router {
+    fn route(&self, packet: Packet) -> Packet;
 }
 
 #[derive(Debug)]
 pub struct Envelope {
     pub id: u64,
+    /// Optional signature of originator for authentication
+    pub sig: Option<String>,
     /// A stack-based routing slip that can
     /// be added to at any time prior to
     /// completion.
@@ -179,6 +186,7 @@ impl Envelope {
         let mut rng = rand::thread_rng();
         Box::new(Envelope {
             id: rng.gen(),
+            sig: None,
             slip: Slip::new(),
             delay_until: 0,
             min_delay: 0,
@@ -202,10 +210,6 @@ impl Route {
             _op: operation,
         }
     }
-}
-
-pub trait Router {
-    fn route(&self, env: Box<Envelope>) -> Box<Envelope>;
 }
 
 /// Provides a vector of Route implemented as a Stack.

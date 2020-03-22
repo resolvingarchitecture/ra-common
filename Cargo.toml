@@ -1,6 +1,6 @@
 [package]
 name = "ra_common"
-version = "0.0.34"
+version = "0.0.35"
 authors = ["Brian Taylor <brian@resolvingarchitecture.io>"]
 license-file = "LICENSE"
 edition = "2018"
