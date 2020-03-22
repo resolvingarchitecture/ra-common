@@ -62,6 +62,7 @@ pub enum NetworkId {
     Bluetooth,
     WiFiDirect,
     HTTPS,
+    VPN,
     TOR,
     I2P,
     Satellite,

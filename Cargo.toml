@@ -1,13 +1,13 @@
 [package]
 name = "ra_common"
-version = "0.0.32"
+version = "0.0.33"
 authors = ["Brian Taylor <brian@resolvingarchitecture.io>"]
 license-file = "LICENSE"
 edition = "2018"
 description = "Common library for RA crates."
 homepage = "http://resolvingarchitecture.io"
 documentation = "https://github.com/resolvingarchitecture/ra-common"
-repository = "https://github.com/resolvingarchitecture/ra-common"
+repository = "https://github.com/resolvingarchitecture/ra-common.git"
 publish = true
 readme = "README.md"
 keywords = ["resolving","architecture"]
