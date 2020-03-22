@@ -21,6 +21,35 @@ pub trait Service {
     fn handle(&mut self, op: &String, env: &mut Envelope);
 }
 
+pub enum ServiceStatus {
+    // Service Starting Up
+    NotInitialized, // Initial state
+    Initializing, // Initializing service configuration
+    Waiting, // Waiting on a dependent Service status to go to RUNNING
+    Starting, // Starting Service
+    Running, // Service is running normally
+    Verified, // Service has been verified operating normally by receiving a message from it
+    PartiallyRunning, // Service is running normally although not everything is running but it's expected to be normal
+    DegradedRunning, // Service is running but in a degraded manner; likely no need for action, will hopefully come back to Running
+    Blocked, // Service is being blocked from usage
+    Unstable, // Service is running but there could be issues; likely need to restart
+    // Service Pausing (Not Yet Supported In Any Service)
+    Pausing, // Service will begin queueing all new requests while in-process requests will be completed
+    Paused, // Service is queueing new requests and pre-pausing requests have completed
+    Unpausing, // Service has stopped queueing new requests and is starting to resume normal operations
+    // Service Shutdown
+    ShuttingDown, // Service teardown imminent - not clean, process likely getting killed - perform the minimum ASAP
+    GracefullyShuttingDown, // Ideal clean teardown
+    Shutdown, // Was teardown forcefully - expect potential file / state corruption
+    GracefullyShutdown, // Shutdown was graceful - safe to assume no file / state corruption
+    // Restarting
+    Restarting, // Short for GracefullyShuttingDown followed by Initializing on up
+    // Unavailable
+    Unavilable, // No Network available but not through blocking, more likely either not installed or not turned on
+    // Service Error
+    Error // Likely need of Service restart
+}
+
 pub trait Producer {
     fn send(&mut self, env: Box<Envelope>);
 }
@@ -46,6 +75,39 @@ pub enum Network {
     I2P,
     Satellite,
     FSRadio
+}
+
+pub enum NetworkStatus {
+    Unregistered, // 0 - Unknown/not registered yet
+    // Sensor Starting Up
+    NotInitialized, // 1 - Initial state - Registered
+    Initializing, // 2 - Initializing Sensor's environment including configuration of Networking component
+    Starting, // 3 - Starting of Networking component
+    Waiting,  // Optional 3.1 - means this sensor is waiting on a dependent sensor's status to change to Starting, e.g. Bote waiting on I2P to begin starting up.
+    // Sensor Networking
+    NetworkWarmup, // Optional 3.2 - means this sensor is waiting for a dependent sensor's status to change to NetworkConnected, e.g. Bote waiting on I2P to actually connect.
+    NetworkPortConflict, // Optional 3.3 - means this sensor was unable to open the supplied port - likely being blocked; recommend changing ports
+    NetworkConnecting, // 4 - Attempting to connect with network
+    NetworkConnected, // 5 - Network successfully connected and ready to handle requests
+    NetworkVerified, // 6 - Network has claimed to be connected (NetworkConnected) and we have received a message from the network verifying it is
+    NetworkStopping, // Network connection is hanging, e.g. unacceptable response times, begin looking at alternatives
+    NetworkStopped, // Network connection failed, try another or recommend alternative
+    NetworkBlocked, // Network connection being blocked.
+    NetworkUnavailable, // Network is not available; either not installed in machine or not started
+    NetworkError, // Error in Network; handle within Sensor if possible yet make Sensor Service aware of likely service degradation.
+    // Sensor Pausing (Not Yet Supported In Any Sensors)
+    Pausing, // Queueing up requests both inbound and outbound waiting for pre-pausing requests to complete.
+    Paused, // All pre-pausing requests completed.
+    Unpausing, // Unblocking queued requests to allow them to continue on and not queueing further requests.
+    // Sensor Shutdown
+    ShuttingDown, // Shutdown imminent - not clean, process likely getting killed - perform the minimum ASAP
+    GracefullyShuttingDown, // Ideal clean teardown
+    Shutdown, // Was teardown forcefully - expect potential file / state corruption
+    GracefullyShutdown, // Shutdown was graceful - safe to assume no file / state corruption
+    // Sensor Restarting
+    Restarting, // Short for GracefullyShuttingDown then STARTING back up.
+    // Sensor Error
+    Error // Likely need of Sensor restart
 }
 
 pub struct Node {
