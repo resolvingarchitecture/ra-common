@@ -137,19 +137,24 @@ pub struct DID {
     pub algorithm: String
 }
 
-/// Payload is of type JSON. When network, address, and sig are Some, it is a JSON formatted relay packet.
-/// When network, address, and sig are None, it is a JSON formatted Envelope.
 #[derive(Debug)]
 pub struct Packet {
-    pub network: NetworkId,
-    pub address: String,
-    pub sig: String,
-    pub payload: String
+    pub network: u16,
+    pub from_addr: [u8],
+    pub to_addr: [u8],
+    pub sig: [u8],
+    pub payload: [u8]
 }
 
-pub trait Router {
-    fn route(&self, packet: Packet) -> Packet;
-}
+// impl Packet {
+//     pub fn serialize(&mut packet: Packet) -> [u8] {
+//
+//     }
+//
+//     pub fn deserialize(packet: [u8]) -> Packet {
+//
+//     }
+// }
 
 #[derive(Debug)]
 pub struct Envelope {
