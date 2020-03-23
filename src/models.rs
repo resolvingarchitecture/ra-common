@@ -112,36 +112,36 @@ pub enum NetworkId {
 
 #[derive(Debug)]
 pub enum NetworkStatus {
-    Unregistered, // 0 - Unknown/not registered yet
-    // Sensor Starting Up
-    NotInitialized, // 1 - Initial state - Registered
-    Initializing, // 2 - Initializing Sensor's environment including configuration of Networking component
-    Starting, // 3 - Starting of Networking component
-    Waiting,  // Optional 3.1 - means this sensor is waiting on a dependent sensor's status to change to Starting, e.g. Bote waiting on I2P to begin starting up.
-    // Sensor Networking
-    NetworkWarmup, // Optional 3.2 - means this sensor is waiting for a dependent sensor's status to change to NetworkConnected, e.g. Bote waiting on I2P to actually connect.
-    NetworkPortConflict, // Optional 3.3 - means this sensor was unable to open the supplied port - likely being blocked; recommend changing ports
-    NetworkConnecting, // 4 - Attempting to connect with network
-    NetworkConnected, // 5 - Network successfully connected and ready to handle requests
-    NetworkVerified, // 6 - Network has claimed to be connected (NetworkConnected) and we have received a message from the network verifying it is
-    NetworkStopping, // Network connection is hanging, e.g. unacceptable response times, begin looking at alternatives
-    NetworkStopped, // Network connection failed, try another or recommend alternative
-    NetworkBlocked, // Network connection being blocked.
-    NetworkUnavailable, // Network is not available; either not installed in machine or not started
-    NetworkError, // Error in Network; handle within Sensor if possible yet make Sensor Service aware of likely service degradation.
-    // Sensor Pausing (Not Yet Supported In Any Sensors)
-    Pausing, // Queueing up requests both inbound and outbound waiting for pre-pausing requests to complete.
-    Paused, // All pre-pausing requests completed.
-    Unpausing, // Unblocking queued requests to allow them to continue on and not queueing further requests.
-    // Sensor Shutdown
-    ShuttingDown, // Shutdown imminent - not clean, process likely getting killed - perform the minimum ASAP
-    GracefullyShuttingDown, // Ideal clean teardown
-    Shutdown, // Was teardown forcefully - expect potential file / state corruption
-    GracefullyShutdown, // Shutdown was graceful - safe to assume no file / state corruption
-    // Sensor Restarting
-    Restarting, // Short for GracefullyShuttingDown then STARTING back up.
-    // Sensor Error
-    Error // Likely need of Sensor restart
+    Unregistered           = 0, // Unknown/not registered yet
+    // Network Client Starting Up
+    NotInitialized         = 1, // Initial state - Registered
+    Initializing           = 2, // Initializing Network Client's environment including configuration of Networking component
+    Starting               = 3, // Starting of Networking component
+    Waiting                = 4,  // Means this Network Client is waiting on a dependent Network Client's status to change to Starting, e.g. Bote waiting on I2P to begin starting up.
+    // Network Networking
+    NetworkWarmup          = 5, // Means this Network Client is waiting for a dependent Network Client's status to change to NetworkConnected, e.g. Bote waiting on I2P to actually connect.
+    NetworkPortConflict    = 6, // Means this Network Client was unable to open the supplied port - likely being blocked; recommend changing ports
+    NetworkConnecting      = 7, // Attempting to connect with network
+    NetworkConnected       = 8, // Network successfully connected and ready to handle requests
+    NetworkVerified        = 9, // Network has claimed to be connected (NetworkConnected) and we have received a message from the network verifying it is
+    NetworkStopping        = 10, // Network connection is hanging, e.g. unacceptable response times, begin looking at alternatives
+    NetworkStopped         = 11, // Network connection failed, try another or recommend alternative
+    NetworkBlocked         = 12, // Network connection being blocked.
+    NetworkUnavailable     = 13, // Network is not available; either not installed in machine or not started
+    NetworkError           = 14, // Error in Network; handle within Network Client if possible yet make Network Client Service aware of likely service degradation.
+    // Network Client Pausing (Not Yet Supported In Any Network)
+    Pausing                = 15, // Queueing up requests both inbound and outbound waiting for pre-pausing requests to complete.
+    Paused                 = 16, // All pre-pausing requests completed.
+    Unpausing              = 17, // Unblocking queued requests to allow them to continue on and not queueing further requests.
+    // Network Client Shutdown
+    ShuttingDown           = 18, // Shutdown imminent - not clean, process likely getting killed - perform the minimum ASAP
+    GracefullyShuttingDown = 19, // Ideal clean teardown
+    Shutdown               = 20, // Was teardown forcefully - expect potential file / state corruption
+    GracefullyShutdown     = 21, // Shutdown was graceful - safe to assume no file / state corruption
+    // Network Client Restarting
+    Restarting             = 22, // Short for GracefullyShuttingDown then STARTING back up.
+    // Network Client Error
+    Error                  = 23 // Likely need of Network Client restart
 }
 
 #[derive(Debug)]
