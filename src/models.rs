@@ -7,6 +7,11 @@ use std::sync::mpsc::SendError;
 use std::marker::Send;
 
 use rand::Rng;
+use self::rand::RngCore;
+use std::convert::TryFrom;
+use std::string::ParseError;
+
+use serde::{Deserialize, Serialize};
 
 pub trait Service {
     fn handle(&mut self, op: &String, env: &mut Envelope);
@@ -57,17 +62,53 @@ pub struct Context {
 
 #[derive(Debug)]
 pub enum NetworkId {
-    IMS,
-    LiFi,
-    Bluetooth,
-    WiFiDirect,
-    HTTPS,
-    VPN,
-    TOR,
-    I2P,
-    Satellite,
-    FSRadio
+    IMS        = 0,
+    LiFi       = 1,
+    Bluetooth  = 2,
+    WiFiDirect = 3,
+    HTTPS      = 4,
+    VPN        = 5,
+    TOR        = 6,
+    I2P        = 7,
+    Satellite  = 8,
+    FSRadio    = 9
 }
+
+// impl From<NetworkId> for u8 {
+//     fn from(original: NetworkId) -> u8 {
+//         match original {
+//             NetworkId::IMS  => 0,
+//             NetworkId::LiFi   => 1,
+//             NetworkId::Bluetooth   => 2,
+//             NetworkId::WiFiDirect => 3,
+//             NetworkId::HTTPS   => 4,
+//             NetworkId::VPN => 5,
+//             NetworkId::TOR => 6,
+//             NetworkId::I2P => 7,
+//             NetworkId::Satellite => 8,
+//             NetworkId::FSRadio => 9
+//         }
+//     }
+// }
+
+// impl TryFrom<u8> for NetworkId {
+//     type Error = ParseError;
+//     fn try_from(original: u8) -> Result<Self, Self::Error> {
+//         match original {
+//             0 => Ok(NetworkId::IMS),
+//             1 => Ok(NetworkId::LiFi),
+//             2 => Ok(NetworkId::Bluetooth),
+//             3 => Ok(NetworkId::WiFiDirect),
+//             4 => Ok(NetworkId::HTTPS),
+//             5 => Ok(NetworkId::VPN),
+//             6 => Ok(NetworkId::TOR),
+//             7 => Ok(NetworkId::I2P),
+//             8 => Ok(NetworkId::Satellite),
+//             9 => Ok(NetworkId::FSRadio),
+//             n => Err(ParseError::InvalidPacketType(n))
+//         }
+//     }
+// }
 
 #[derive(Debug)]
 pub enum NetworkStatus {
@@ -118,6 +159,114 @@ impl Network {
     }
 }
 
+#[derive(Debug)]
+pub enum PacketType {
+    Data  = 0, // packet carries a data payload
+    Fin   = 1, // signals the end of a connection
+    Ack   = 2, // signals acknowledgment of a packet
+    Reset = 3, // forcibly terminates a connection
+    Syn   = 4, // initiates a new connection with a peer
+}
+
+// impl From<PacketType> for u8 {
+//     fn from(original: PacketType) -> u8 {
+//         match original {
+//             PacketType::Data  => 0,
+//             PacketType::Fin   => 1,
+//             PacketType::Ack   => 2,
+//             PacketType::Reset => 3,
+//             PacketType::Syn   => 4,
+//         }
+//     }
+// }
+
+// impl TryFrom<u8> for PacketType {
+//     type Error = ParseError;
+//     fn try_from(original: u8) -> Result<Self, Self::Error> {
+//         match original {
+//             0 => Ok(PacketType::Data),
+//             1 => Ok(PacketType::Fin),
+//             2 => Ok(PacketType::Ack),
+//             3 => Ok(PacketType::Reset),
+//             4 => Ok(PacketType::Syn),
+//             n => Err(ParseError::InvalidPacketType(n))
+//         }
+//     }
+// }
+
+#[derive(Debug)]
+// #[derive(Serialize,Deserialize)]
+pub struct Packet {
+    pub p_type: PacketType,
+    /// Identification of this packet
+    /// Normally used for Claim Checks
+    pub id: u64,
+    /// Network this packet was sent over
+    pub network_id: NetworkId,
+    /// Sender node's address
+    pub from_addr: String,
+    /// Destination node's address
+    pub to_addr: String,
+    /// Signature used to verify sender
+    pub sig: String,
+    /// Delay Until this time in milliseconds since epoch.
+    /// If min_delay and max_delay > 0, include a random delay
+    /// after delay_until between them.
+    pub delay_until: u64,
+    /// Delay for this many milliseconds as a minimum
+    pub min_delay: u64,
+    /// Delay for this many milliseconds as a maximum
+    pub max_delay: u64,
+    /// Meta-data used for assisting with network routing
+    pub headers: HashMap<String,String>,
+    /// Data being sent
+    // pub payload: [u8]
+    pub payload: String
+}
+
+impl Packet {
+    pub fn new(packet_type: PacketType, net_id: NetworkId, from: String, to: String, signature: String) -> Box<Packet> {
+        let mut rng = rand::thread_rng();
+        Box::new(Packet {
+            p_type: packet_type,
+            id: rng.next_u64(),
+            network_id: net_id,
+            from_addr: from,
+            to_addr: to,
+            sig: signature,
+            delay_until: 0,
+            min_delay: 0,
+            max_delay: 0,
+            headers: HashMap::new(),
+            // payload: *"{}".as_bytes()
+            payload: String::from("{}")
+        })
+    }
+
+    // pub fn from_envelope(env: Envelope, net_id: NetworkId, from: String, to: String, signature: String) -> Box<Packet> {
+    //     Box::new(Packet {
+    //         p_type: PacketType::Data,
+    //         id: env.id,
+    //         network_id: net_id,
+    //         from_addr: from,
+    //         to_addr: to,
+    //         sig: signature,
+    //         delay_until: 0,
+    //         min_delay: 0,
+    //         max_delay: 0,
+    //         headers: HashMap::new(),
+    //         payload: *serde_json::to_string(&env).unwrap().as_bytes()
+    //     })
+    // }
+    // pub fn serialize(&mut packet: Packet) -> [u8] {
+    //
+    // }
+    //
+    // pub fn deserialize(packet: [u8]) -> Packet {
+    //
+    // }
+}
+
 pub struct Node {
     pub local_peers: HashMap<NetworkId, Peer>
 }
@@ -138,44 +287,14 @@ pub struct DID {
 }
 
 #[derive(Debug)]
-pub struct Packet {
-    pub network: u16,
-    pub from_addr: [u8],
-    pub to_addr: [u8],
-    pub sig: [u8],
-    pub headers: [u8],
-    pub payload: [u8]
-}
-
-// impl Packet {
-//     pub fn serialize(&mut packet: Packet) -> [u8] {
-//
-//     }
-//
-//     pub fn deserialize(packet: [u8]) -> Packet {
-//
-//     }
-// }
-
-#[derive(Debug)]
 pub struct Envelope {
+    /// Identification of an Envelope instance
     pub id: u64,
-    /// Optional signature of originator for authentication
-    pub sig: Option<String>,
     /// A stack-based routing slip that can
     /// be added to at any time prior to
     /// completion.
     pub slip: Slip,
-    /// Delay Until this time in milliseconds since epoch.
-    /// If min_delay and max_delay also included,
-    /// include a random delay after delay_until based on
-    /// their range.
-    pub delay_until: u64,
-    /// Delay for this many milliseconds as a minimum
-    pub min_delay: u64,
-    /// Delay for this many milliseconds as a maximum
-    pub max_delay: u64,
-    /// Meta-data used for assisting with routing
+    /// Meta-data used for assisting with service routing
     pub headers: HashMap<String, String>,
     /// Data being sent to a destination
     pub payload: HashMap<String, String>
@@ -187,12 +306,8 @@ impl Envelope {
     pub fn new() -> Box<Envelope> {
         let mut rng = rand::thread_rng();
         Box::new(Envelope {
-            id: rng.gen(),
-            sig: None,
+            id: rng.next_u64(),
             slip: Slip::new(),
-            delay_until: 0,
-            min_delay: 0,
-            max_delay: 0,
             headers: HashMap::new(),
             payload: HashMap::new()
         })
