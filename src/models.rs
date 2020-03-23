@@ -143,6 +143,7 @@ pub struct Packet {
     pub from_addr: [u8],
     pub to_addr: [u8],
     pub sig: [u8],
+    pub headers: [u8],
     pub payload: [u8]
 }
 
