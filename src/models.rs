@@ -56,10 +56,6 @@ pub trait Consumer {
 
 pub enum Action{POST, PUT, DELETE, GET}
 
-pub struct Context {
-
-}
-
 #[derive(Debug)]
 pub enum NetworkId {
     IMS        = 0,
@@ -110,6 +106,10 @@ pub enum NetworkId {
 //     }
 // }
 
+pub trait Network {
+    fn handle(&mut self, packet: &mut Packet);
+}
+
 #[derive(Debug)]
 pub enum NetworkStatus {
     Unregistered           = 0, // Unknown/not registered yet
@@ -142,21 +142,6 @@ pub enum NetworkStatus {
     Restarting             = 22, // Short for GracefullyShuttingDown then STARTING back up.
     // Network Client Error
     Error                  = 23 // Likely need of Network Client restart
-}
-
-#[derive(Debug)]
-pub struct Network {
-    _id: NetworkId,
-    _status: NetworkStatus
-}
-
-impl Network {
-    pub fn new(id: NetworkId) -> Box<Network> {
-        Box::new(Network {
-            _id: id,
-            _status: NetworkStatus::NotInitialized
-        })
-    }
 }
 
 #[derive(Debug)]
