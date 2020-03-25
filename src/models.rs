@@ -210,9 +210,9 @@ pub struct Packet {
 }
 
 impl Packet {
-    pub fn new(packet_type: PacketType, net_id: NetworkId, from: String, to: String, signature: String) -> Box<Packet> {
+    pub fn new(packet_type: PacketType, net_id: NetworkId, from: String, to: String, signature: String) -> Packet {
         let mut rng = rand::thread_rng();
-        Box::new(Packet {
+        Packet {
             p_type: packet_type,
             id: rng.next_u64(),
             network_id: net_id,
@@ -225,31 +225,8 @@ impl Packet {
             headers: HashMap::new(),
             // payload: *"{}".as_bytes()
             payload: String::from("{}")
-        })
+        }
     }
-
-    // pub fn from_envelope(env: Envelope, net_id: NetworkId, from: String, to: String, signature: String) -> Box<Packet> {
-    //     Box::new(Packet {
-    //         p_type: PacketType::Data,
-    //         id: env.id,
-    //         network_id: net_id,
-    //         from_addr: from,
-    //         to_addr: to,
-    //         sig: signature,
-    //         delay_until: 0,
-    //         min_delay: 0,
-    //         max_delay: 0,
-    //         headers: HashMap::new(),
-    //         payload: *serde_json::to_string(&env).unwrap().as_bytes()
-    //     })
-    // }
-    // pub fn serialize(&mut packet: Packet) -> [u8] {
-    //
-    // }
-    //
-    // pub fn deserialize(packet: [u8]) -> Packet {
-    //
-    // }
 }
 
 pub struct Node {
@@ -288,14 +265,14 @@ pub struct Envelope {
 unsafe impl Send for Envelope {}
 
 impl Envelope {
-    pub fn new() -> Box<Envelope> {
+    pub fn new() -> Envelope {
         let mut rng = rand::thread_rng();
-        Box::new(Envelope {
+        Envelope {
             id: rng.next_u64(),
             slip: Slip::new(),
             headers: HashMap::new(),
             payload: HashMap::new()
-        })
+        }
     }
 }
 
