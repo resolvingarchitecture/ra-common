@@ -8,14 +8,11 @@ use std::marker::Send;
 
 use rand::Rng;
 use self::rand::RngCore;
-use std::convert::TryFrom;
+use std::convert::{TryFrom, Infallible};
 use std::string::ParseError;
 
 use serde::{Deserialize, Serialize};
-
-pub trait Service {
-    fn handle(&mut self, op: &String, env: &mut Envelope);
-}
+use crate::models::NetworkStatus::Error;
 
 pub enum ServiceStatus {
     // Service Starting Up
@@ -41,17 +38,17 @@ pub enum ServiceStatus {
     // Restarting
     Restarting, // Short for GracefullyShuttingDown followed by Initializing on up
     // Unavailable
-    Unavilable, // No Network available but not through blocking, more likely either not installed or not turned on
+    Unavailable, // No Network available but not through blocking, more likely either not installed or not turned on
     // Service Error
     Error // Likely need of Service restart
 }
 
 pub trait Producer {
-    fn send(&mut self, env: Box<Envelope>);
+    fn send(&mut self, env: Envelope);
 }
 
 pub trait Consumer {
-    fn receive(&mut self) -> Box<Envelope>;
+    fn receive(&mut self) -> Envelope;
 }
 
 pub enum Action{POST, PUT, DELETE, GET}
@@ -70,44 +67,40 @@ pub enum NetworkId {
     FSRadio    = 9
 }
 
-// impl From<NetworkId> for u8 {
-//     fn from(original: NetworkId) -> u8 {
-//         match original {
-//             NetworkId::IMS  => 0,
-//             NetworkId::LiFi   => 1,
-//             NetworkId::Bluetooth   => 2,
-//             NetworkId::WiFiDirect => 3,
-//             NetworkId::HTTPS   => 4,
-//             NetworkId::VPN => 5,
-//             NetworkId::TOR => 6,
-//             NetworkId::I2P => 7,
-//             NetworkId::Satellite => 8,
-//             NetworkId::FSRadio => 9
-//         }
-//     }
-// }
+impl From<NetworkId> for u8 {
+    fn from(original: NetworkId) -> u8 {
+        match original {
+            NetworkId::IMS  => 0,
+            NetworkId::LiFi   => 1,
+            NetworkId::Bluetooth   => 2,
+            NetworkId::WiFiDirect => 3,
+            NetworkId::HTTPS   => 4,
+            NetworkId::VPN => 5,
+            NetworkId::TOR => 6,
+            NetworkId::I2P => 7,
+            NetworkId::Satellite => 8,
+            NetworkId::FSRadio => 9
+        }
+    }
+}
 
-// impl TryFrom<u8> for NetworkId {
-//     type Error = ParseError;
-//     fn try_from(original: u8) -> Result<Self, Self::Error> {
-//         match original {
-//             0 => Ok(NetworkId::IMS),
-//             1 => Ok(NetworkId::LiFi),
-//             2 => Ok(NetworkId::Bluetooth),
-//             3 => Ok(NetworkId::WiFiDirect),
-//             4 => Ok(NetworkId::HTTPS),
-//             5 => Ok(NetworkId::VPN),
-//             6 => Ok(NetworkId::TOR),
-//             7 => Ok(NetworkId::I2P),
-//             8 => Ok(NetworkId::Satellite),
-//             9 => Ok(NetworkId::FSRadio),
-//             n => Err(ParseError::InvalidPacketType(n))
-//         }
-//     }
-// }
-
-pub trait Network {
-    fn handle(&mut self, packet: &mut Packet);
+impl TryFrom<u8> for NetworkId {
+    type Error = ();
+    fn try_from(original: u8) -> Result<Self, Self::Error> {
+        match original {
+            0 => Ok(NetworkId::IMS),
+            1 => Ok(NetworkId::LiFi),
+            2 => Ok(NetworkId::Bluetooth),
+            3 => Ok(NetworkId::WiFiDirect),
+            4 => Ok(NetworkId::HTTPS),
+            5 => Ok(NetworkId::VPN),
+            6 => Ok(NetworkId::TOR),
+            7 => Ok(NetworkId::I2P),
+            8 => Ok(NetworkId::Satellite),
+            9 => Ok(NetworkId::FSRadio),
+            n => Err(())
+        }
+    }
 }
 
 #[derive(Debug)]
