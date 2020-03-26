@@ -8,8 +8,7 @@ use std::marker::Send;
 
 use rand::Rng;
 use self::rand::RngCore;
-use std::convert::{TryFrom, Infallible};
-use std::string::ParseError;
+use std::convert::{TryFrom};
 
 use serde::{Deserialize, Serialize};
 use crate::models::NetworkStatus::Error;
@@ -98,7 +97,7 @@ impl TryFrom<u8> for NetworkId {
             7 => Ok(NetworkId::I2P),
             8 => Ok(NetworkId::Satellite),
             9 => Ok(NetworkId::FSRadio),
-            n => Err(())
+            _ => Err(())
         }
     }
 }
