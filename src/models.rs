@@ -174,50 +174,27 @@ pub enum PacketType {
 #[derive(Debug)]
 // #[derive(Serialize,Deserialize)]
 pub struct Packet {
-    pub p_type: PacketType,
-    /// Identification of this packet
-    /// Normally used for Claim Checks
-    pub id: u64,
-    /// Network this packet was sent over
-    pub network_id: NetworkId,
-    /// Sender node's address
+    pub packet_type: u8,
+    // Temporary identification of this packet between from and to address.
+    // Normally used for Claim Checks and/or to ensure packet was received then discarded.
+    pub id: u8,
+    // Network this packet was sent over
+    pub network_id: u8,
+    // Sender node's address
     pub from_addr: String,
-    /// Destination node's address
+    // Destination node's address
     pub to_addr: String,
-    /// Signature used to verify sender
-    pub sig: String,
-    /// Delay Until this time in milliseconds since epoch.
-    /// If min_delay and max_delay > 0, include a random delay
-    /// after delay_until between them.
-    pub delay_until: u64,
-    /// Delay for this many milliseconds as a minimum
-    pub min_delay: u64,
-    /// Delay for this many milliseconds as a maximum
-    pub max_delay: u64,
-    /// Meta-data used for assisting with network routing
-    pub headers: HashMap<String,String>,
-    /// Data being sent
-    // pub payload: [u8]
-    pub payload: String
+    // Delay for this many seconds as a minimum
+    pub min_delay: u16,
+    // Delay for this many seconds as a maximum
+    pub max_delay: u16,
+    // Data being sent
+    pub envelope: Option<Envelope>
 }
 
 impl Packet {
-    pub fn new(packet_type: PacketType, net_id: NetworkId, from: String, to: String, signature: String) -> Packet {
-        let mut rng = rand::thread_rng();
-        Packet {
-            p_type: packet_type,
-            id: rng.next_u64(),
-            network_id: net_id,
-            from_addr: from,
-            to_addr: to,
-            sig: signature,
-            delay_until: 0,
-            min_delay: 0,
-            max_delay: 0,
-            headers: HashMap::new(),
-            // payload: *"{}".as_bytes()
-            payload: String::from("{}")
-        }
+    pub fn new(id: u8, packet_type: u8, network_id: u8, from_addr: String, to_addr: String, envelope: Option<Envelope>) -> Packet {
+        Packet { id, packet_type, network_id, from_addr, to_addr, min_delay: 0, max_delay: 0, envelope }
     }
 }
 
@@ -241,45 +218,32 @@ pub struct DID {
 }
 
 #[derive(Debug)]
+/// An Envelope is a wrapper of data with some meta-data for internal routing.
 pub struct Envelope {
-    /// Identification of an Envelope instance
-    pub id: u64,
+    pub from: u8,
+    pub to: u8,
+    pub msg: Vec<u8>,
     /// A stack-based routing slip that can
     /// be added to at any time prior to
     /// completion.
-    pub slip: Slip,
-    /// Meta-data used for assisting with service routing
-    pub headers: HashMap<String, String>,
-    /// Data being sent to a destination
-    pub payload: HashMap<String, String>
+    pub slip: Slip
 }
 
-unsafe impl Send for Envelope {}
-
 impl Envelope {
-    pub fn new() -> Envelope {
-        let mut rng = rand::thread_rng();
-        Envelope {
-            id: rng.next_u64(),
-            slip: Slip::new(),
-            headers: HashMap::new(),
-            payload: HashMap::new()
-        }
+    pub fn new(from: u8, to: u8, msg: Vec<u8>) -> Envelope {
+        Envelope { from, to, msg, slip: Slip::new()}
     }
 }
 
 #[derive(Debug)]
 pub struct Route {
-    pub _service: String,
-    pub _op: String,
+    pub service: u8,
+    pub op: u8,
 }
 
 impl Route {
-    pub fn new(service: String, operation: String) -> Route {
-        Route {
-            _service: service,
-            _op: operation,
-        }
+    pub fn new(service: u8, op: u8) -> Route {
+        Route { service, op }
     }
 }
 
