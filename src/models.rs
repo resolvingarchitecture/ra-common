@@ -1,17 +1,10 @@
 /// Common Models Module
-extern crate rand;
-
 use std::collections::HashMap;
-use std::collections::VecDeque;
-use std::sync::mpsc::SendError;
-use std::marker::Send;
-
-use rand::Rng;
-use self::rand::RngCore;
 use std::convert::{TryFrom};
 
-use serde::{Deserialize, Serialize};
-use crate::models::NetworkStatus::Error;
+pub trait Service {
+    fn operate(&mut self, operation: u8, env: Envelope);
+}
 
 pub enum ServiceStatus {
     // Service Starting Up
@@ -259,12 +252,6 @@ impl Slip {
     fn new() -> Slip {
         Slip {
             routes: Vec::with_capacity(2),
-            in_progress: false
-        }
-    }
-    fn with_capacity(capacity: usize) -> Slip {
-        Slip {
-            routes: Vec::with_capacity(capacity),
             in_progress: false
         }
     }
