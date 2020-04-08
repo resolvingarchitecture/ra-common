@@ -6,33 +6,40 @@ pub trait Service {
     fn operate(&mut self, operation: u8, env: Envelope);
 }
 
+#[derive(Debug, Copy, Clone)]
 pub enum ServiceStatus {
+    Unregistered        = 0, // Unknown/not registered yet
     // Service Starting Up
-    NotInitialized, // Initial state
-    Initializing, // Initializing service configuration
-    Waiting, // Waiting on a dependent Service status to go to RUNNING
-    Starting, // Starting Service
-    Running, // Service is running normally
-    Verified, // Service has been verified operating normally by receiving a message from it
-    PartiallyRunning, // Service is running normally although not everything is running but it's expected to be normal
-    DegradedRunning, // Service is running but in a degraded manner; likely no need for action, will hopefully come back to Running
-    Blocked, // Service is being blocked from usage
-    Unstable, // Service is running but there could be issues; likely need to restart
+    NotInitialized      = 1, // Initial state
+    Initializing        = 2, // Initializing service configuration
+    Waiting             = 3, // Waiting on a dependent Service status to go to RUNNING
+    Starting            = 4, // Starting Service
+    Running             = 5, // Service is running normally
+    Verified            = 6, // Service has been verified operating normally by receiving a message from it
+    PartiallyRunning    = 7, // Service is running normally although not everything is running but it's expected to be normal
+    DegradedRunning     = 8, // Service is running but in a degraded manner; likely no need for action, will hopefully come back to Running
+    Blocked             = 9, // Service is being blocked from usage
+    Unstable            = 10, // Service is running but there could be issues; likely need to restart
+
     // Service Pausing (Not Yet Supported In Any Service)
-    Pausing, // Service will begin queueing all new requests while in-process requests will be completed
-    Paused, // Service is queueing new requests and pre-pausing requests have completed
-    Unpausing, // Service has stopped queueing new requests and is starting to resume normal operations
+    Pausing             = 11, // Service will begin queueing all new requests while in-process requests will be completed
+    Paused              = 12, // Service is queueing new requests and pre-pausing requests have completed
+    Unpausing           = 13, // Service has stopped queueing new requests and is starting to resume normal operations
+
     // Service Shutdown
-    ShuttingDown, // Service teardown imminent - not clean, process likely getting killed - perform the minimum ASAP
-    GracefullyShuttingDown, // Ideal clean teardown
-    Shutdown, // Was teardown forcefully - expect potential file / state corruption
-    GracefullyShutdown, // Shutdown was graceful - safe to assume no file / state corruption
+    ShuttingDown            = 14, // Service teardown imminent - not clean, process likely getting killed - perform the minimum ASAP
+    GracefullyShuttingDown  = 15, // Ideal clean teardown
+    Shutdown                = 16, // Was teardown forcefully - expect potential file / state corruption
+    GracefullyShutdown      = 17, // Shutdown was graceful - safe to assume no file / state corruption
+
     // Restarting
-    Restarting, // Short for GracefullyShuttingDown followed by Initializing on up
+    Restarting          = 18, // Short for GracefullyShuttingDown followed by Initializing on up
+
     // Unavailable
-    Unavailable, // No Network available but not through blocking, more likely either not installed or not turned on
+    Unavailable         = 19, // No Network available but not through blocking, more likely either not installed or not turned on
+
     // Service Error
-    Error // Likely need of Service restart
+    Error               = 20 // Likely need of Service restart
 }
 
 pub trait Producer {
@@ -43,9 +50,15 @@ pub trait Consumer {
     fn receive(&mut self) -> Envelope;
 }
 
-pub enum Action{POST, PUT, DELETE, GET}
+#[derive(Debug, Copy, Clone)]
+pub enum Action {
+    POST    = 0,
+    PUT     = 1,
+    DELETE  = 2,
+    GET     = 3
+}
 
-#[derive(Debug)]
+#[derive(Debug, Copy, Clone)]
 pub enum NetworkId {
     IMS        = 0,
     LiFi       = 1,
@@ -95,9 +108,10 @@ impl TryFrom<u8> for NetworkId {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Copy, Clone)]
 pub enum NetworkStatus {
     Unregistered           = 0, // Unknown/not registered yet
+
     // Network Client Starting Up
     NotInitialized         = 1, // Initial state - Registered
     Initializing           = 2, // Initializing Network Client's environment including configuration of Networking component
@@ -129,7 +143,7 @@ pub enum NetworkStatus {
     Error                  = 23 // Likely need of Network Client restart
 }
 
-#[derive(Debug)]
+#[derive(Debug, Copy, Clone)]
 pub enum PacketType {
     Data  = 0, // packet carries a data payload
     Fin   = 1, // signals the end of a connection
@@ -164,7 +178,7 @@ pub enum PacketType {
 //     }
 // }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 // #[derive(Serialize,Deserialize)]
 pub struct Packet {
     pub packet_type: u8,
@@ -210,7 +224,7 @@ pub struct DID {
     pub algorithm: String
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 /// An Envelope is a wrapper of data with some meta-data for internal routing.
 pub struct Envelope {
     pub from: u8,
@@ -228,7 +242,7 @@ impl Envelope {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Copy, Clone)]
 pub struct Route {
     pub service: u8,
     pub op: u8,
@@ -242,7 +256,7 @@ impl Route {
 
 /// Provides a vector of Route implemented as a Stack.
 /// Supports adding to the stack at any point.
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Slip {
     routes: Vec<Route>,
     in_progress: bool
