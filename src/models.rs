@@ -39,7 +39,65 @@ pub enum ServiceStatus {
     Unavailable         = 19, // No Network available but not through blocking, more likely either not installed or not turned on
 
     // Service Error
-    Error               = 20 // Likely need of Service restart
+    GenError            = 20 // Likely need of Service restart
+}
+
+impl ServiceStatus {
+    fn as_str(&self) -> &'static str {
+        match *self { // *self has type Direction
+            ServiceStatus::Unregistered => "Unregistered",
+            ServiceStatus::NotInitialized => "NotInitialized",
+            ServiceStatus::Initializing => "Initializing",
+            ServiceStatus::Waiting => "Waiting",
+            ServiceStatus::Starting => "Starting",
+            ServiceStatus::Running => "Running",
+            ServiceStatus::Verified => "Verified",
+            ServiceStatus::PartiallyRunning => "PartiallyRunning",
+            ServiceStatus::DegradedRunning => "DegradedRunning",
+            ServiceStatus::Blocked => "Blocked",
+            ServiceStatus::Unstable => "Unstable",
+            ServiceStatus::Pausing => "Pausing",
+            ServiceStatus::Paused => "Paused",
+            ServiceStatus::Unpausing => "Unpausing",
+            ServiceStatus::ShuttingDown => "ShuttingDown",
+            ServiceStatus::GracefullyShuttingDown => "GracefullyShuttingDown",
+            ServiceStatus::Shutdown => "Shutdown",
+            ServiceStatus::GracefullyShutdown => "GracefullyShutdown",
+            ServiceStatus::Restarting => "Restarting",
+            ServiceStatus::Unavailable => "Unavailable",
+            ServiceStatus::GenError => "GenError"
+        }
+    }
+}
+
+impl TryFrom<u8> for ServiceStatus {
+    type Error = ();
+    fn try_from(original: u8) -> Result<Self, Self::Error> {
+        match original {
+            0 => Ok(ServiceStatus::Unregistered),
+            1 => Ok(ServiceStatus::NotInitialized),
+            2 => Ok(ServiceStatus::Initializing),
+            3 => Ok(ServiceStatus::Waiting),
+            4 => Ok(ServiceStatus::Starting),
+            5 => Ok(ServiceStatus::Running),
+            6 => Ok(ServiceStatus::Verified),
+            7 => Ok(ServiceStatus::PartiallyRunning),
+            8 => Ok(ServiceStatus::DegradedRunning),
+            9 => Ok(ServiceStatus::Blocked),
+            10 => Ok(ServiceStatus::Unstable),
+            11 => Ok(ServiceStatus::Pausing),
+            12 => Ok(ServiceStatus::Paused),
+            13 => Ok(ServiceStatus::Unpausing),
+            14 => Ok(ServiceStatus::ShuttingDown),
+            15 => Ok(ServiceStatus::GracefullyShuttingDown),
+            16 => Ok(ServiceStatus::Shutdown),
+            17 => Ok(ServiceStatus::GracefullyShutdown),
+            18 => Ok(ServiceStatus::Restarting),
+            19 => Ok(ServiceStatus::Unavailable),
+            20 => Ok(ServiceStatus::GenError),
+            n => Err(())
+        }
+    }
 }
 
 pub trait Producer {
@@ -70,23 +128,6 @@ pub enum NetworkId {
     I2P        = 7,
     Satellite  = 8,
     FSRadio    = 9
-}
-
-impl From<NetworkId> for u8 {
-    fn from(original: NetworkId) -> u8 {
-        match original {
-            NetworkId::IMS  => 0,
-            NetworkId::LiFi   => 1,
-            NetworkId::Bluetooth   => 2,
-            NetworkId::WiFiDirect => 3,
-            NetworkId::HTTPS   => 4,
-            NetworkId::VPN => 5,
-            NetworkId::TOR => 6,
-            NetworkId::I2P => 7,
-            NetworkId::Satellite => 8,
-            NetworkId::FSRadio => 9
-        }
-    }
 }
 
 impl TryFrom<u8> for NetworkId {
@@ -140,7 +181,40 @@ pub enum NetworkStatus {
     // Network Client Restarting
     Restarting             = 22, // Short for GracefullyShuttingDown then STARTING back up.
     // Network Client Error
-    Error                  = 23 // Likely need of Network Client restart
+    GenError               = 23 // Likely need of Network Client restart
+}
+
+impl TryFrom<u8> for NetworkStatus {
+    type Error = ();
+    fn try_from(original: u8) -> Result<Self, Self::Error> {
+        match original {
+            0 => Ok(NetworkStatus::Unregistered),
+            1 => Ok(NetworkStatus::NotInitialized),
+            2 => Ok(NetworkStatus::Initializing),
+            3 => Ok(NetworkStatus::Starting),
+            4 => Ok(NetworkStatus::Waiting),
+            5 => Ok(NetworkStatus::NetworkWarmup),
+            6 => Ok(NetworkStatus::NetworkPortConflict),
+            7 => Ok(NetworkStatus::NetworkConnecting),
+            8 => Ok(NetworkStatus::NetworkConnected),
+            9 => Ok(NetworkStatus::NetworkVerified),
+            9 => Ok(NetworkStatus::NetworkStopping),
+            9 => Ok(NetworkStatus::NetworkStopped),
+            9 => Ok(NetworkStatus::NetworkBlocked),
+            9 => Ok(NetworkStatus::NetworkUnavailable),
+            9 => Ok(NetworkStatus::NetworkError),
+            9 => Ok(NetworkStatus::Pausing),
+            9 => Ok(NetworkStatus::Paused),
+            9 => Ok(NetworkStatus::Unpausing),
+            9 => Ok(NetworkStatus::ShuttingDown),
+            9 => Ok(NetworkStatus::GracefullyShuttingDown),
+            9 => Ok(NetworkStatus::Shutdown),
+            9 => Ok(NetworkStatus::GracefullyShutdown),
+            9 => Ok(NetworkStatus::Restarting),
+            9 => Ok(NetworkStatus::GenError),
+            _ => Err(())
+        }
+    }
 }
 
 #[derive(Debug, Copy, Clone)]
@@ -152,31 +226,19 @@ pub enum PacketType {
     Syn   = 4, // initiates a new connection with a peer
 }
 
-// impl From<PacketType> for u8 {
-//     fn from(original: PacketType) -> u8 {
-//         match original {
-//             PacketType::Data  => 0,
-//             PacketType::Fin   => 1,
-//             PacketType::Ack   => 2,
-//             PacketType::Reset => 3,
-//             PacketType::Syn   => 4,
-//         }
-//     }
-// }
-
-// impl TryFrom<u8> for PacketType {
-//     type Error = ParseError;
-//     fn try_from(original: u8) -> Result<Self, Self::Error> {
-//         match original {
-//             0 => Ok(PacketType::Data),
-//             1 => Ok(PacketType::Fin),
-//             2 => Ok(PacketType::Ack),
-//             3 => Ok(PacketType::Reset),
-//             4 => Ok(PacketType::Syn),
-//             n => Err(ParseError::InvalidPacketType(n))
-//         }
-//     }
-// }
+impl TryFrom<u8> for PacketType {
+    type Error = ();
+    fn try_from(original: u8) -> Result<Self, Self::Error> {
+        match original {
+            0 => Ok(PacketType::Data),
+            1 => Ok(PacketType::Fin),
+            2 => Ok(PacketType::Ack),
+            3 => Ok(PacketType::Reset),
+            4 => Ok(PacketType::Syn),
+            n => Err(())
+        }
+    }
+}
 
 #[derive(Debug, Clone)]
 // #[derive(Serialize,Deserialize)]
