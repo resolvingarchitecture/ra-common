@@ -240,6 +240,9 @@ impl Envelope {
     pub fn new(from: u8, to: u8, msg: Vec<u8>) -> Envelope {
         Envelope { from, to, msg, slip: Slip::new()}
     }
+    pub fn new_msg_only(msg: Vec<u8>) -> Envelope {
+        Envelope {from: 0, to: 0, msg, slip: Slip::new()}
+    }
 }
 
 #[derive(Debug, Copy, Clone)]
