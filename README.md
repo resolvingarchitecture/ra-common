@@ -16,7 +16,7 @@
   <p>
     <a href="https://travis-ci.com/resolvingarchitecture/ra-common"><img alt="build" src="https://img.shields.io/travis/resolvingarchitecture/ra-common"/></a>
     <a href="https://crates.io/crates/ra-common"><img alt="Crate Info" src="https://img.shields.io/crates/v/ra-common.svg"/></a>
-    <a href="https://docs.rs/crate/ra-common/"><img alt="API Docs" src="https://img.shields.io/badge/docs.ra-common-green"/></a>
+    <a href="https://docs.rs/crate/ra_common/"><img alt="API Docs" src="https://img.shields.io/badge/docs.ra-common-green"/></a>
   </p>
   <p>
     <a href="https://github.com/resolvingarchitecture/ra-common/blob/master/LICENSE"><img alt="License" src="https://img.shields.io/github/license/resolvingarchitecture/ra-common"/></a>
@@ -35,7 +35,7 @@
   <h4>
     <a href="https://resolvingarchitecture.io">Info</a>
     <span> | </span>
-    <a href="https://docs.rs/crate/ra-common/">Docs</a>
+    <a href="https://docs.rs/crate/ra_common/">Docs</a>
     <span> | </span>
     <a href="https://github.com/resolvingarchitecture/ra-common/blob/master/CHANGELOG.md">Changelog</a>
   </h4>
